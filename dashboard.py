@@ -31,34 +31,12 @@ else:
     day_df = day_df[(day_df['dteday'] >= pd.Timestamp(start_date)) & (day_df['dteday'] <= pd.Timestamp(end_date))]
 
 
-# Visualisasi Data
-st.subheader("Tren Penyewaan Sepeda Harian")
-fig, ax = plt.subplots(figsize=(10, 4))
-sns.lineplot(x=day_df['dteday'], y=day_df['cnt'], ax=ax)
-plt.xticks(rotation=45)
-st.pyplot(fig)
-
-
-
 st.write("")
 st.write("")
-st.write("## Pertanyaan 1 : Bagaimana pengaruh faktor cuaca terhadap jumlah penyewaan sepeda dalam setiap harinya?")
+st.write("## Pertanyaan 1 : - Bagaimana pengaruh faktor cuaca terhadap rata-rata jumlah penyewaan sepeda dalam setiap harinya? ")
 
 st.subheader("Pengaruh Cuaca terhadap Penyewaan Sepeda")
 
-
-# Menghitung total penyewaan sepeda berdasarkan musim
-season_rentals = day_df.groupby('season')['cnt'].sum().reset_index()
-
-# Menyesuaikan label musim
-season_labels = {1: 'Spring', 2: 'Summer', 3: 'Fall', 4: 'Winter'}
-season_rentals['season'] = season_rentals['season'].map(season_labels)
-
-# Streamlit UI
-st.write("Total Penyewaan Sepeda Berdasarkan Musim")
-
-# Menampilkan tabel di Streamlit
-st.dataframe(season_rentals)
 
 st.write("")
 st.write("")
@@ -125,9 +103,21 @@ ax.set_title('Pengaruh Cuaca terhadap Penyewaan Sepeda')
 st.pyplot(fig)
 
 st.markdown("**Insight:**")
-st.markdown("> Penyewaan sepeda tertinggi terjadi pada musim gugur, kemungkinan karena cuaca yang lebih nyaman untuk bersepeda, sementara penyewaan terendah terjadi pada musim semi, mungkin akibat cuaca yang masih tidak stabil. Musim panas dan musim dingin memiliki jumlah penyewaan yang cukup tinggi, tetapi tidak setinggi musim gugur. Secara keseluruhan, tren ini menunjukkan bahwa faktor cuaca berpengaruh terhadap jumlah penyewaan sepeda, dengan kondisi yang lebih hangat dan stabil cenderung meningkatkan minat masyarakat untuk bersepeda.")
+st.write("""
+- **Cuaca Cerah (Clear, Few Clouds, Partly Cloudy) → Penyewaan Tertinggi**  
+  Pada kondisi cuaca yang baik, jumlah penyewaan sepeda mencapai angka tertinggi. Ini menunjukkan bahwa pengguna cenderung lebih nyaman bersepeda saat cuaca mendukung.
+
+- **Cuaca Mendung atau Berkabut (Mist, Cloudy) → Penyewaan Menurun**  
+  Terjadi sedikit penurunan jumlah penyewaan dibandingkan dengan hari yang cerah. Kemungkinan disebabkan oleh visibilitas yang lebih rendah dan udara yang lebih lembab.
+
+- **Cuaca Buruk (Hujan Ringan, Salju Ringan) → Penyewaan Berkurang Drastis**  
+  Penyewaan turun signifikan karena kondisi jalan yang licin dan kurang nyaman bagi pesepeda.
+
+- **Cuaca Ekstrem (Hujan Deras, Salju Tebal) → Penyewaan Paling Rendah**  
+  Hampir tidak ada aktivitas penyewaan sepeda dalam kondisi ini.  
+  Hal ini menunjukkan bahwa pengguna lebih memilih alternatif transportasi lain saat cuaca sangat buruk.
+""")
 st.markdown("> Berdasarkan hasil Clustering, Kondisi cuaca yang ekstrem, seperti suhu yang sangat dingin atau panas berlebih, serta kelembapan tinggi, menyebabkan penurunan jumlah penyewaan.")
-st.markdown("> Faktor cuaca berpengaruh signifikan terhadap jumlah penyewaan sepeda. Penyewaan tertinggi terjadi saat cuaca cerah karena kondisi yang nyaman. Saat cuaca mendung atau berkabut, penyewaan sedikit menurun akibat visibilitas rendah dan udara lembab. Pada cuaca buruk seperti hujan atau salju ringan, penyewaan berkurang drastis karena jalan licin. Dalam kondisi ekstrem seperti hujan deras atau salju tebal, penyewaan hampir tidak ada, menunjukkan bahwa pengguna lebih memilih transportasi lain saat cuaca sangat buruk. ")
 st.markdown("**Conclusion:**")
 st.markdown("> Cuaca yang baik mendorong lebih banyak orang untuk menyewa sepeda, sementara cuaca buruk atau ekstrem secara drastis mengurangi jumlah penyewaan. Hal ini bisa menjadi pertimbangan bagi penyedia layanan dalam merencanakan jumlah sepeda yang tersedia dan strategi promosi pada berbagai kondisi cuaca.")
 
@@ -138,10 +128,10 @@ st.write("")
 
 
 # Menghitung rata-rata penyewaan per jam
-st.write("## Pertanyaan 2 : Pada jam berapa jumlah penyewaan sepeda tertinggi dan terendah dalam sehari dan apa saja faktor yang mempengaruhinya?")
+st.write("## Pertanyaan 2 :- Pada jam berapa rata-rata jumlah penyewaan sepeda tertinggi dan terendah setiap harinya  dan apa saja faktor yang mempengaruhinya?")
 hourly_rentals = hour_df.groupby('hr')['cnt'].mean()
 
-st.subheader("Tren Penyewaan Sepeda dalam Sehari")
+st.subheader("Tren Rata-rata Penyewaan Sepeda dalam Sehari")
 fig, ax = plt.subplots(figsize=(10, 5))
 sns.lineplot(x=hourly_rentals.index, y=hourly_rentals.values, marker='o', color='b', ax=ax)
 ax.set_xlabel('Hour of the Day')
@@ -165,16 +155,22 @@ with col2:
     st.metric(label="⏳ Jam Terendah", value=f"{low_hour}:00", delta=int(low_value))
 
 st.markdown("**Insight:**")
-st.markdown("> Pola penyewaan sepeda menunjukkan lonjakan pada pagi (07:00-09:00) dan sore (17:00-19:00), mencerminkan penggunaan utama sebagai transportasi kerja atau sekolah. Penyewaan terendah terjadi pada dini hari (00:00-05:00) karena aktivitas berkurang. Siang hari (10:00-16:00) memiliki tingkat penyewaan stabil, didominasi oleh pengguna rekreasi atau aktivitas santai.")
+st.write("""
+- **Berdasarkan analisis data rata-rata penyewaan sepeda per jam, terdapat pola yang jelas dalam penggunaan sepeda sepanjang hari:**
+
+- **Jam Penyewaan Tertinggi:** Pagi (07:00 - 09:00) dan Sore (17:00 - 19:00)  
+  Lonjakan penyewaan sepeda diperkirakan terjadi saat jam berangkat kerja/sekolah dan jam pulang.  
+  Hal ini menunjukkan bahwa banyak pengguna memanfaatkan sepeda sebagai alat transportasi utama pada hari kerja.
+
+- **Jam Penyewaan Terendah:** Dini Hari (00:00 - 05:00)  
+  Aktivitas penyewaan sepeda sangat rendah pada jam-jam ini.  
+  Kemungkinan karena kebanyakan orang sudah beristirahat dan kondisi jalan yang lebih sepi.
+
+- **Pola Siang Hari (10:00 - 16:00)**  
+  Penyewaan tetap ada, tetapi lebih rendah dibandingkan jam sibuk.  
+  Didominasi oleh pengguna yang bersepeda untuk rekreasi atau aktivitas santai.
+""")
+
 st.markdown("**Conclusion:**")
 st.markdown("> Penyewaan sepeda memiliki pola dua puncak utama, yaitu saat pagi dan sore hari, yang berkaitan dengan aktivitas kerja dan sekolah. Sementara itu, pada dini hari, jumlah penyewaan sangat rendah. Hal ini dapat membantu penyedia layanan dalam mengatur jumlah sepeda yang tersedia pada jam-jam sibuk dan mengoptimalkan strategi operasional mereka.")
 
-
-st.write("# ")
-st.write("")
-st.write("")
-st.write("")
-
-# Kesimpulan
-st.subheader("Kesimpulan")
-st.write("Dari analisis ini, dapat disimpulkan bahwa tren penyewaan sepeda dipengaruhi oleh berbagai faktor seperti cuaca, suhu, musim dan waktu. Dengan pemahaman ini, pengelola layanan penyewaan sepeda dapat mengoptimalkan strategi operasional mereka untuk meningkatkan layanan dan pendapatan.")
